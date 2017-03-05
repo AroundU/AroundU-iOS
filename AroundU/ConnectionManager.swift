@@ -33,18 +33,6 @@ class Post {
 
 class ConnectionManager {
     func login(username: String, password: String){
-//        let r = Just.post("http://lassondehacks.io:8089/auth/login", data: ["username": email.text!, "password": password.text!])
-//        if r.ok {
-//            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loggedIn"), object: nil)
-//            let defaults = UserDefaults.standard
-//            if let dict = r.json as? NSDictionary {
-//                defaults.setValue(dict.value(forKey: "username"), forKey: defaultsKeys.username)
-//            }
-//            defaults.setValue(r.headers["Set-Cookie"], forKey: defaultsKeys.cookie)
-//            defaults.setValue(password.text!, forKey: defaultsKeys.password)
-//            defaults.synchronize()
-//        }
-        
         Just.post("http://lassondehacks.io:8089/auth/login", data: ["username": username, "password": password]){ r in
             if r.ok {
                 DispatchQueue.global().async {
@@ -54,6 +42,22 @@ class ConnectionManager {
                     }
                     defaults.setValue(r.headers["Set-Cookie"], forKey: defaultsKeys.cookie)
                     defaults.setValue(password, forKey: defaultsKeys.password)
+                    defaults.synchronize()
+                }
+                
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loggedIn"), object: nil)
+                }
+            }
+        }
+    }
+    
+    func connect(){
+        let defaults = UserDefaults.standard
+        Just.post("http://lassondehacks.io:8089/auth/login", data: ["username": defaults.string(forKey: defaultsKeys.username), "password": defaults.string(forKey: defaultsKeys.password)]){ r in
+            if r.ok {
+                DispatchQueue.global().async {
+                    defaults.setValue(r.headers["Set-Cookie"], forKey: defaultsKeys.cookie)
                     defaults.synchronize()
                 }
                 

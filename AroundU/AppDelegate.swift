@@ -73,12 +73,20 @@ extension UIViewController {
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    var loggedIn: Bool = false
+    var loggedIn : Bool {
+        let defaults = UserDefaults.standard
+        if (defaults.string(forKey: defaultsKeys.username) != nil && defaults.string(forKey: defaultsKeys.password) != nil) {
+            Connection.connect()
+            return true
+        }
+        return false
+    }
     var created: Bool = false
     var loginViewController: LoginViewController!
     var mainViewController: MainViewController!
     var loginToolbarController: LoginToolbarController!
     var mainToolbarController: AppToolbarController!
+    var postFABMenu: PostFABMenuController!
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -87,7 +95,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         loginViewController = LoginViewController()
         loginToolbarController = LoginToolbarController(rootViewController: loginViewController)
-        window = UIWindow(frame: UIScreen.main.bounds)
         if(!loggedIn) {
             window?.rootViewController = loginToolbarController
         } else {
@@ -96,6 +103,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "loggedIn"), object: nil, queue: nil, using: switchToMainViewController)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "CameraShoulClose"), object: nil, queue: nil, using: closeCamera)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "CameraShoulOpen"), object: nil, queue: nil, using: closeCamera)
         
         return true
     }
@@ -109,6 +118,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {}
 
     func applicationWillTerminate(_ application: UIApplication) {}
+    
+    func closeCamera(notification: Notification) {
+        UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { Void in
+            self.window?.rootViewController = self.mainToolbarController
+        }, completion: nil)
+    }
+    
+    func openCamera(notification: Notification) {
+        UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { Void in
+            self.window?.rootViewController = AppCaptureController(rootViewController: CameraViewController())
+        }, completion: nil)
+    }
 
     func switchToMainViewController(notification: Notification) {
         renderMainViewController()
@@ -118,11 +139,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if(!created) {
             mainViewController = MainViewController()
             mainToolbarController = AppToolbarController(rootViewController: mainViewController)
+            postFABMenu = PostFABMenuController(rootViewController: mainToolbarController)
             created = true
         }
         
         UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromRight, animations: { Void in
-            self.window?.rootViewController = self.mainToolbarController
+            self.window?.rootViewController = self.postFABMenu
         }, completion: nil)
     }
 

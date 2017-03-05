@@ -43,4 +43,14 @@ class AppToolbarController: ToolbarController {
         
         toolbar.leftViews = [menuButton]
     }
+    
+    func sendMediaPost() {
+        
+    }
+    
+    func sendCaptionPost() {
+        
+    }
+    
 }
+
