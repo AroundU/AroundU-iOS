@@ -27,10 +27,14 @@ class LoginViewController: UIViewController, TextFieldDelegate {
     }
     
     func switchToLogin(notification: Notification) -> Void {
-        view = loginView
+        UIView.transition(with: (UIApplication.shared.delegate as! AppDelegate).window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromRight, animations: { Void in
+            self.view = self.loginView
+        }, completion: nil)
     }
     
     func switchToRegister(notification: Notification) -> Void {
-        view = registerView
+        UIView.transition(with: (UIApplication.shared.delegate as! AppDelegate).window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromRight, animations: { Void in
+            self.view = self.registerView
+        }, completion: nil)
     }
 }

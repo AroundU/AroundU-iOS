@@ -9,6 +9,12 @@
 import UIKit
 import Material
 
+struct defaultsKeys {
+    static let username = "username"
+    static let password = "password"
+    static let cookie = "Cookie"
+}
+
 extension UIColor {
     convenience init(red: Int, green: Int, blue: Int) {
         assert(red >= 0 && red <= 255, "Invalid red component")
@@ -76,6 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
         window = UIWindow(frame: Screen.bounds)
         
         loginViewController = LoginViewController()
@@ -113,7 +120,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             mainToolbarController = AppToolbarController(rootViewController: mainViewController)
             created = true
         }
-        window?.rootViewController = mainToolbarController
+        
+        UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromRight, animations: { Void in
+            self.window?.rootViewController = self.mainToolbarController
+        }, completion: nil)
     }
 
 }

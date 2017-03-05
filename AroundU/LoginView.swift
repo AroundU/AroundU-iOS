@@ -9,6 +9,7 @@
 import UIKit
 import Material
 import Stevia
+import Just
 
 class LoginView:UIView, TextFieldDelegate {
     let email = ErrorTextField()
@@ -102,7 +103,7 @@ class LoginView:UIView, TextFieldDelegate {
     
     func loginTapped() {
         endEditing(true)
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "loggedIn"), object: nil)
+        Connection.login(username: email.text!, password: password.text!)
     }
     
     func wantToRegister() {

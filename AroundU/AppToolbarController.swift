@@ -11,10 +11,18 @@ import Material
 
 class AppToolbarController: ToolbarController {
     
+    var menuButton : IconButton!
+    
     override func prepare() {
         super.prepare()
+        prepareMenuButton()
         prepareStatusBar()
         prepareToolbarStyle()
+    }
+    
+    func prepareMenuButton() {
+        menuButton = IconButton(image: Icon.cm.menu, tintColor: .white)
+        menuButton.pulseColor = .white
     }
     
     func prepareStatusBar() {
@@ -32,5 +40,7 @@ class AppToolbarController: ToolbarController {
         
         toolbar.detailLabel.textColor = .white
         toolbar.detailLabel.textAlignment = .center
+        
+        toolbar.leftViews = [menuButton]
     }
 }

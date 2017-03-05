@@ -19,7 +19,10 @@
 		731FD6A91E6B63CA009FE011 /* LoginToolbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731FD6A81E6B63CA009FE011 /* LoginToolbarController.swift */; };
 		731FD6AB1E6B661A009FE011 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731FD6AA1E6B661A009FE011 /* LoginView.swift */; };
 		731FD6AD1E6B662B009FE011 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731FD6AC1E6B662B009FE011 /* RegisterView.swift */; };
-		734F23BE1E6B6FFA00B26928 /* Simplr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734F23BD1E6B6FFA00B26928 /* Simplr.swift */; };
+		734F23C01E6B9AC700B26928 /* ConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734F23BF1E6B9AC700B26928 /* ConnectionManager.swift */; };
+		734F23C41E6BC7E000B26928 /* CardTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734F23C31E6BC7E000B26928 /* CardTable.swift */; };
+		734F23C61E6BCB7600B26928 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734F23C51E6BCB7600B26928 /* CardView.swift */; };
+		734F23C81E6BF61900B26928 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734F23C71E6BF61900B26928 /* CameraViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,7 +61,10 @@
 		731FD6A81E6B63CA009FE011 /* LoginToolbarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginToolbarController.swift; sourceTree = "<group>"; };
 		731FD6AA1E6B661A009FE011 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		731FD6AC1E6B662B009FE011 /* RegisterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
-		734F23BD1E6B6FFA00B26928 /* Simplr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Simplr.swift; sourceTree = "<group>"; };
+		734F23BF1E6B9AC700B26928 /* ConnectionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionManager.swift; sourceTree = "<group>"; };
+		734F23C31E6BC7E000B26928 /* CardTable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardTable.swift; sourceTree = "<group>"; };
+		734F23C51E6BCB7600B26928 /* CardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		734F23C71E6BF61900B26928 /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 		8EA8B085CB0ACF231ADCA243 /* Pods-AroundU.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AroundU.release.xcconfig"; path = "Pods/Target Support Files/Pods-AroundU/Pods-AroundU.release.xcconfig"; sourceTree = "<group>"; };
 		FD7F9C53D731963628413864 /* Pods_AroundU.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AroundU.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -132,16 +138,19 @@
 			isa = PBXGroup;
 			children = (
 				731FD6741E6B3386009FE011 /* AppDelegate.swift */,
+				734F23C51E6BCB7600B26928 /* CardView.swift */,
+				734F23C31E6BC7E000B26928 /* CardTable.swift */,
 				731FD6761E6B3386009FE011 /* MainViewController.swift */,
-				731FD67B1E6B3386009FE011 /* Assets.xcassets */,
-				731FD67D1E6B3386009FE011 /* LaunchScreen.storyboard */,
-				731FD6801E6B3386009FE011 /* Info.plist */,
-				731FD6A21E6B37B9009FE011 /* LoginViewController.swift */,
 				731FD6A41E6B43D1009FE011 /* AppToolbarController.swift */,
-				731FD6A81E6B63CA009FE011 /* LoginToolbarController.swift */,
+				731FD67D1E6B3386009FE011 /* LaunchScreen.storyboard */,
+				731FD67B1E6B3386009FE011 /* Assets.xcassets */,
 				731FD6AA1E6B661A009FE011 /* LoginView.swift */,
 				731FD6AC1E6B662B009FE011 /* RegisterView.swift */,
-				734F23BD1E6B6FFA00B26928 /* Simplr.swift */,
+				731FD6A21E6B37B9009FE011 /* LoginViewController.swift */,
+				731FD6A81E6B63CA009FE011 /* LoginToolbarController.swift */,
+				731FD6801E6B3386009FE011 /* Info.plist */,
+				734F23BF1E6B9AC700B26928 /* ConnectionManager.swift */,
+				734F23C71E6BF61900B26928 /* CameraViewController.swift */,
 			);
 			path = AroundU;
 			sourceTree = "<group>";
@@ -351,13 +360,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				734F23C81E6BF61900B26928 /* CameraViewController.swift in Sources */,
 				731FD6AB1E6B661A009FE011 /* LoginView.swift in Sources */,
 				731FD6A31E6B37B9009FE011 /* LoginViewController.swift in Sources */,
 				731FD6A91E6B63CA009FE011 /* LoginToolbarController.swift in Sources */,
 				731FD6AD1E6B662B009FE011 /* RegisterView.swift in Sources */,
+				734F23C61E6BCB7600B26928 /* CardView.swift in Sources */,
 				731FD6A51E6B43D1009FE011 /* AppToolbarController.swift in Sources */,
+				734F23C01E6B9AC700B26928 /* ConnectionManager.swift in Sources */,
 				731FD6771E6B3386009FE011 /* MainViewController.swift in Sources */,
-				734F23BE1E6B6FFA00B26928 /* Simplr.swift in Sources */,
+				734F23C41E6BC7E000B26928 /* CardTable.swift in Sources */,
 				731FD6751E6B3386009FE011 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
