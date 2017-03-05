@@ -6,11 +6,12 @@
 //  Copyright © 2017 LassondeHacks. All rights reserved.
 //
 
+import CoreLocation
 import UIKit
 import Material
 
 struct defaultsKeys {
-    static let username = "username"
+    static let email = "email"
     static let password = "password"
     static let cookie = "Cookie"
 }
@@ -70,13 +71,14 @@ extension UIViewController {
 }
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
 
     var window: UIWindow?
     var loggedIn : Bool {
-        let defaults = UserDefaults.standard
-        if (defaults.string(forKey: defaultsKeys.username) != nil && defaults.string(forKey: defaultsKeys.password) != nil) {
-            Connection.connect()
+        let user = UserDefaults.standard.string(forKey: defaultsKeys.email)
+        let psswd = UserDefaults.standard.string(forKey: defaultsKeys.password)
+        if ( user != nil && psswd != nil) {
+            Connection.connect(user!, psswd!)
             return true
         }
         return false
@@ -86,7 +88,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var mainViewController: MainViewController!
     var loginToolbarController: LoginToolbarController!
     var mainToolbarController: AppToolbarController!
-    var postFABMenu: PostFABMenuController!
+    var publishFABMenu: PublishFABMenuController!
+    
+    var locationManager:CLLocationManager!
+    var userLocation: CLLocation!
+    
+    func determineMyCurrentLocation() {
+        locationManager = CLLocationManager()
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.requestAlwaysAuthorization()
+    }
+    
+    func startUserLocation(){
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.startUpdatingLocation()
+            //locationManager.startUpdatingHeading()
+        }
+    }
+    
+    func getUserLocation() -> CLLocation {
+        return userLocation
+    }
+    
+    func stopUserLocation(){
+        locationManager.stopUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        userLocation = locations[0] as CLLocation
+    }
+    
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -95,6 +127,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         loginViewController = LoginViewController()
         loginToolbarController = LoginToolbarController(rootViewController: loginViewController)
+        
         if(!loggedIn) {
             window?.rootViewController = loginToolbarController
         } else {
@@ -102,9 +135,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         window?.makeKeyAndVisible()
         
+        
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "loggedIn"), object: nil, queue: nil, using: switchToMainViewController)
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "CameraShoulClose"), object: nil, queue: nil, using: closeCamera)
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "CameraShoulOpen"), object: nil, queue: nil, using: closeCamera)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "CameraShoulOpen"), object: nil, queue: nil, using: openCamera)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "willPublishText"), object: nil, queue: nil, using: switchToPublishTextView)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "willPublishImage"), object: nil, queue: nil, using: switchToPublishImageView)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "PublishShouldTerminate"), object: nil, queue: nil, using: switchToMainViewController)
+        
+        determineMyCurrentLocation()
         
         return true
     }
@@ -121,13 +160,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func closeCamera(notification: Notification) {
         UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { Void in
-            self.window?.rootViewController = self.mainToolbarController
+            self.window?.rootViewController = self.publishFABMenu
         }, completion: nil)
     }
     
     func openCamera(notification: Notification) {
         UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { Void in
             self.window?.rootViewController = AppCaptureController(rootViewController: CameraViewController())
+        }, completion: nil)
+    }
+    
+    func switchToPublishTextView(notification: Notification) {
+        UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { Void in
+            self.window?.rootViewController = PublishTextViewController()
+        }, completion: nil)
+    }
+    
+    func switchToPublishImageView(notification: Notification) {
+        UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionCrossDissolve, animations: { Void in
+            self.window?.rootViewController = PublishMediaViewController(image: notification.userInfo?["image"] as! UIImage)
         }, completion: nil)
     }
 
@@ -139,13 +190,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if(!created) {
             mainViewController = MainViewController()
             mainToolbarController = AppToolbarController(rootViewController: mainViewController)
-            postFABMenu = PostFABMenuController(rootViewController: mainToolbarController)
+            publishFABMenu = PublishFABMenuController(rootViewController: mainToolbarController)
+            self.window?.rootViewController = self.publishFABMenu
             created = true
+        } else {
+            UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromRight, animations: { Void in
+                self.window?.rootViewController = self.publishFABMenu
+            }, completion: nil)
         }
-        
-        UIView.transition(with: window!, duration: 0.5, options: UIViewAnimationOptions.transitionFlipFromRight, animations: { Void in
-            self.window?.rootViewController = self.postFABMenu
-        }, completion: nil)
     }
 
 }

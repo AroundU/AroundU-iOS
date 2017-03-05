@@ -9,7 +9,6 @@
 import UIKit
 import Material
 import Stevia
-import Just
 
 class LoginView:UIView, TextFieldDelegate {
     let email = ErrorTextField()

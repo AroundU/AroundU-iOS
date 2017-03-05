@@ -9,7 +9,7 @@
 import UIKit
 import Material
 
-class PostFABMenuController: FABMenuController {
+class PublishFABMenuController: FABMenuController {
     let fabMenuSize = CGSize(width: 56, height: 56)
     
     var fabButton: FABButton!
@@ -61,31 +61,24 @@ class PostFABMenuController: FABMenuController {
     }
 
     @objc
-     func handleVideoItem(button: UIButton) {
-        //        transition(to: NotesViewController())
-        fabMenu.close()
-        //        fabMenu.fabButton?.animate(animation: Motion.rotate(angle: 0))
-    }
-    
-    @objc
     func handlePhotoItem(button: UIButton) {
         //        transition(to: NotesViewController())
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "CameraShoulOpen"), object: nil)
         fabMenu.close()
-        //        fabMenu.fabButton?.animate(animation: Motion.rotate(angle: 0))
     }
     
     @objc
     func handleTextItem(button: UIButton) {
         //        transition(to: NotesViewController())
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "willPublishText"), object: nil)
         fabMenu.close()
-        //        fabMenu.fabButton?.animate(animation: Motion.rotate(angle: 0))
     }
 
     @objc
      func fabMenuWillOpen(fabMenu: FABMenu) {
-        //        fabMenu.fabButton?.animate(animation: Motion.rotate(angle: 45))
-        
+        fabMenu.fabButton?.motion(.rotationAngle(45))
         print("fabMenuWillOpen")
+        
     }
     
     @objc
@@ -95,8 +88,7 @@ class PostFABMenuController: FABMenuController {
     
     @objc
      func fabMenuWillClose(fabMenu: FABMenu) {
-        //        fabMenu.fabButton?.animate(animation: Motion.rotate(angle: 0))
-        
+        fabMenu.fabButton?.motion(.rotationAngle(0))
         print("fabMenuWillClose")
     }
     

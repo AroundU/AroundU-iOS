@@ -12,7 +12,11 @@ import Stevia
 
 class CardView: TableViewCell {
     var lastCard: Bool = false
-    var post: Post!
+    var post: Post! {
+        didSet{
+            renderCard()
+        }
+    }
     var card = Card()
     var top = Toolbar()
     var repliesLabel = UILabel()
@@ -25,29 +29,29 @@ class CardView: TableViewCell {
         dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .medium
-        
-        renderCard()
 
     }
+    
+    
     
     func renderCard() {
         //Caption
         
-        top.title = "Card Caption long enough to be cropped by the line break mode"
+        top.title = post.description
         top.titleLabel.textAlignment = .left
         top.titleLabel.lineBreakMode = .byTruncatingTail
         top.titleLabel.font = RobotoFont.regular(with: 14)
         //Date
-        top.detail = dateFormatter.string(from: Date())
+        top.detail = dateFormatter.string(from: (Date(timeIntervalSince1970: Double(post.timestamp / 1000))))
         top.detailLabel.textAlignment = .left
         top.detailLabel.textColor = Color.grey.base
         //Replies
         repliesLabel.textAlignment = .left
-        repliesLabel.text = "15 replies"
+        //repliesLabel.text = (post.comments.count as NSNumber).stringValue
         repliesLabel.textColor = Color.grey.base
         repliesLabel.font = RobotoFont.regular(with: 14)
         
-        votes.title = "14 K"
+        votes.title = ((post.upvotes - post.downvotes) as NSNumber).stringValue
         votes.titleLabel.textAlignment = .left
         votes.titleLabel.textColor = Color.grey.base
         votes.titleLabel.font = RobotoFont.regular(with: 12)
@@ -61,9 +65,6 @@ class CardView: TableViewCell {
         card.bottomBar = votes
         card.contentViewEdgeInsetsPreset = .horizontally1
         card.bottomBarEdgeInsetsPreset = .horizontally1
-        
-        card.image = UIImage(named: "kk")
-
         
         card.height = 80
         

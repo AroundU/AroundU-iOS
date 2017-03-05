@@ -9,6 +9,7 @@
 
 import UIKit
 import AVFoundation
+import CoreLocation
 import Material
 import Stevia
 
@@ -16,6 +17,7 @@ class CameraViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        (UIApplication.shared.delegate as! AppDelegate).startUserLocation()
         prepareCapture()
     }
     
@@ -240,7 +242,7 @@ extension AppCaptureController {
     }
     
     public func capture(capture: Capture, asynchronouslyStill image: UIImage) {
-        UIImageWriteToSavedPhotosAlbum(image, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "willPublishImage"), object: nil, userInfo: ["image": image])
         print("captureStillImageAsynchronously")
     }
     
@@ -270,23 +272,28 @@ extension AppCaptureController {
         }
     }
     
-    func toggleFlash() {
+    func toggleFlash(capture: Capture) {
         let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
-        if (device?.hasTorch)! {
-            do {
-                try device?.lockForConfiguration()
-                if (device?.torchMode == AVCaptureTorchMode.on) {
-                    device?.torchMode = AVCaptureTorchMode.off
-                } else {
-                    do {
-                        try device?.setTorchModeOnWithLevel(1.0)
-                    } catch {
-                        print(error)
+        
+        if(capture.flashMode == .auto) {
+            return
+        } else {
+            if (device?.hasTorch)! {
+                do {
+                    try device?.lockForConfiguration()
+                    if (device?.torchMode == AVCaptureTorchMode.on) {
+                        device?.torchMode = AVCaptureTorchMode.off
+                    } else {
+                        do {
+                            try device?.setTorchModeOnWithLevel(1.0)
+                        } catch {
+                            print(error)
+                        }
                     }
+                    device?.unlockForConfiguration()
+                } catch {
+                    print(error)
                 }
-                device?.unlockForConfiguration()
-            } catch {
-                print(error)
             }
         }
     }
@@ -352,7 +359,7 @@ extension AppCaptureController {
             return
         }
         
-        toggleFlash()
+        toggleFlash(capture: capture)
         
         guard let b = button as? Button else {
             return
@@ -364,7 +371,7 @@ extension AppCaptureController {
             capture.flashMode = .on
         case .on:
             b.image = Icon.flashAuto
-            capture.flashMode = .auto
+            capture.flashMode = .off
         case .auto:
             b.image = Icon.flashOff
             capture.flashMode = .off

@@ -7,23 +7,31 @@
 //
 
 import UIKit
+import CoreLocation
 import Material
 import Stevia
 
-class TabViewController: UIViewController {
+class TabViewController: UIViewController, CLLocationManagerDelegate {
     var table: CardTable!
     var refreshControl: UIRefreshControl!
+    
+    var locationManager:CLLocationManager!
+    var userLocation: CLLocation!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .white
         
+        determineMyCurrentLocation()
+        
+        startUserLocation()
+        
         table = CardTable()
         
         view.layout(table).edges()
         
-        table.posts = [Post(), Post()]
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "DataDidFinishLoading"), object: nil, queue: nil, using: DataDidFinishLoading)
         
         refreshControl = UIRefreshControl()
         
@@ -35,13 +43,35 @@ class TabViewController: UIViewController {
         table.addSubview(refreshControl)
     }
     
-    func refresh(sender: AnyObject?) {
-        reloadData()
-        refreshControl.endRefreshing()
+    func determineMyCurrentLocation() {
+        locationManager = CLLocationManager()
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        locationManager.requestAlwaysAuthorization()
     }
     
-    func reloadData() {
-        table.posts = [Post(), Post()]
+    func startUserLocation(){
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
+    func getUserLocation() -> CLLocation {
+        return userLocation
+    }
+    
+    func stopUserLocation(){
+        locationManager.stopUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+            userLocation = locations[0] as CLLocation
+            reloadData(userLocation)
+    }
+    
+    func refresh(sender: AnyObject?) {
+        reloadData(userLocation)
+        refreshControl.endRefreshing()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -56,22 +86,70 @@ class TabViewController: UIViewController {
     
     func preparePageTabBarItem() {}
     
+    func reloadData(_ location: CLLocation) {}
+    
+    func DataDidFinishLoading(notification: Notification) {}
+    
 }
 
 class HotViewController: TabViewController {
     override func preparePageTabBarItem() { pageTabBarItem.setImage(UIImage(named: "ic_whatshot"), for: .normal) }
+    
+    override func reloadData(_ location: CLLocation) {
+        DispatchQueue.global().async {
+            Connection.fetchHot(location: location)
+        }
+
+    }
+    
+    override func DataDidFinishLoading(notification: Notification) {
+        table.posts = notification.userInfo?["posts"] as! [Post]
+    }
 }
 
 class RecentViewController: TabViewController {
     override func preparePageTabBarItem() { pageTabBarItem.setImage(UIImage(named: "ic_schedule"), for: .normal) }
+    
+    override func reloadData(_ location: CLLocation) {
+        DispatchQueue.global().async {
+            Connection.fetchRecent(location: location)
+        }
+        
+    }
+    
+    override func DataDidFinishLoading(notification: Notification) {
+        table.posts = notification.userInfo?["posts"] as! [Post]
+    }
 }
 
 class NearViewController: TabViewController {
     override func preparePageTabBarItem() { pageTabBarItem.setImage(UIImage(named: "ic_my_location"), for: .normal) }
+    
+    override func reloadData(_ location: CLLocation) {
+        DispatchQueue.global().async {
+            Connection.fetchNear(location: location)
+        }
+        
+    }
+    
+    override func DataDidFinishLoading(notification: Notification) {
+        table.posts = notification.userInfo?["posts"] as! [Post]
+    }
 }
 
 class ArchivedViewController: TabViewController {
     override func preparePageTabBarItem() { pageTabBarItem.setImage(UIImage(named: "ic_person"), for: .normal) }
+    
+    override func reloadData(_ location: CLLocation) {
+        DispatchQueue.global().async {
+            Connection.fetchArchived(location: location)
+        }
+        
+    }
+    
+    override func DataDidFinishLoading(notification: Notification) {
+        table.posts = notification.userInfo?["posts"] as! [Post]
+    }
 }
 
 class MainViewController: PageTabBarController {
